@@ -10,7 +10,7 @@ function Subscribed() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const handleTest = async () => {
+        const getAllSubs = async () => {
             try {
                 const req = await axios.get(`/api/v1/sub/all/${channelId}`)
                 req.data.data.map((e) => {
@@ -25,7 +25,7 @@ function Subscribed() {
                 setLoading(false)
             }
         }
-        handleTest();
+        getAllSubs();
     }, [])
 
 

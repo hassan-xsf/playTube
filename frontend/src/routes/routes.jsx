@@ -108,7 +108,7 @@ export const router = createBrowserRouter([
         ]
     },
     {
-        path: '/video',
+        path: '/video/:videoId',
         element: (
             <>
                 <Navbar />

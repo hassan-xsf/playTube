@@ -105,42 +105,6 @@ const toggleSubscribeChannel = asyncHandler(async (req, res) => {
 
 })
 
-const toggleSubscribeVideo = asyncHandler(async (req, res) => {
-    const { videoId } = req.params;
-    if (!videoId) {
-        throw new ApiError(200, "Video not found!")
-    }
-
-    const findChannel = await Video.findById({
-        _id: videoId
-    }).select("-videoFile -thumbnail -title -description -duration")
-
-    if (!findChannel) {
-        throw new ApiError(400, "Channel doesn't exists or there was a problem.")
-    }
-
-    const subFound = await Subscription.findOneAndDelete({
-        channel: findChannel.owner,
-        subscriber: req.user._id
-    })
-
-    let sub;
-    if (!subFound) {
-        sub = await Subscription.create({
-            channel: findChannel.owner,
-            subscriber: req.user._id
-        })
-        if (!sub) {
-            throw new ApiError(300, "There was a problem subscribing the channel")
-        }
-    }
-
-
-    return res.status(200).json(
-        new ApiResponse(200, sub, subFound ? "Channel un-subscribed" : "Channel subscribed")
-    )
-
-})
 
 const isSubscribed = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
@@ -152,7 +116,6 @@ const isSubscribed = asyncHandler(async (req, res) => {
         _id: videoId
     }).select("-videoFile -thumbnail -title -description -duration")
 
-    console.log(findChannel)
     if (!findChannel) {
         throw new ApiError(400, "Channel doesn't exists or there was a problem.")
     }
@@ -161,13 +124,12 @@ const isSubscribed = asyncHandler(async (req, res) => {
         subscriber: req.user._id
     })
     return res.status(200).json(
-        new ApiResponse(200, {}, (found ? "The user is subscribed!" : "The user is not subscribed"))
+        new ApiResponse(200, {"subbed": found ? true : false}, (found ? "The user is subscribed!" : "The user is not subscribed"))
     )
 })
 
 export {
     isSubscribed,
     toggleSubscribeChannel,
-    toggleSubscribeVideo,
     getChannelSubscribedTo
 }
