@@ -5,7 +5,7 @@ import {
     isSubscribed,
     toggleSubscribeChannel,
     toggleSubscribeVideo,
-    getChannelSubscribers
+    getChannelSubscribedTo
     
 } from '../controllers/subscription.controller.js'
 
@@ -17,7 +17,7 @@ router.use(verifyJWT)
 router.route("/video/:videoId").post(toggleSubscribeVideo)
 router.route("/channel/:channel").post(toggleSubscribeChannel)
 router.route("/hassubbed/:videoId").get(isSubscribed)
-router.route("/all/:channel").get(getChannelSubscribers)
+router.route("/all/:channel").get(getChannelSubscribedTo)
 
 
 

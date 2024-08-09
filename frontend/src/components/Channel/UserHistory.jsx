@@ -1,7 +1,17 @@
-import React from 'react'
+import React , {useEffect} from 'react'
 import {VideoBox} from '../index'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router'
 
 function UserHistory() {
+    const navigate = useNavigate();
+    const channelName = useSelector(state => state.auth.channelUsername)
+    const authData = useSelector(state => state.auth.authData)
+    useEffect(() => {
+        if(channelName !== authData.username) {
+            return navigate("/notfound")
+        }
+    } , [])
     return (
         <>
             <span className="font-bold text-2xl sm:text-3xl text-center sm:text-start">

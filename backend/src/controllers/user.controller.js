@@ -1,7 +1,7 @@
 import { asyncHandler } from '../utils/asyncHandler.js'
 import { ApiError } from '../utils/ApiError.js'
 import { User } from '../models/user.model.js'
-import {uploadFile, deleteFile } from '../utils/cloudinary.js'
+import { uploadFile, deleteFile } from '../utils/cloudinary.js'
 import { ApiResponse } from '../utils/ApiResonse.js'
 import jwt from 'jsonwebtoken'
 import mongoose from 'mongoose'
@@ -165,13 +165,13 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 const changeUserPassword = asyncHandler(async (req, res) => {
     const { oldPassword, newPassword } = req.body;
-    const user = User.findById(req.user._id)
+    const user = await User.findById(req.user._id)
     if (!user) {
         throw new ApiError(400, "User data not found!")
     }
     const match = await user.isPasswordCorrect(oldPassword)
     if (!match)
-        throw new ApiError(400, "IncorrectOld Password")
+        throw new ApiError(400, "Incorect Password")
     if (oldPassword == newPassword)
         throw new ApiError(400, "Password should be new")
 
@@ -190,20 +190,30 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 })
 const updateAccountDetails = asyncHandler(async (req, res) => {
     const { email, fullname } = req.body;
-    const user = User.findById(req.user._id).select("-password")
+
+    const user = await User.findById(req.user._id).select("-password")
     if (!user) {
         throw new ApiError(400, "User data not found!")
     }
-    if (!email || !username) {
+    if (!email?.trim() && !fullname?.trim()) {
         throw new ApiError(400, "Both fields are required")
     }
-    const isTaken = User.findOne({ email: email })
-    if (isTaken) {
-        throw new ApiError(400, "Email is already taken")
+    if (email.trim()) {
+        const isTaken = await User.findOne({ email: email })
+
+        if (isTaken) {
+            throw new ApiError(400, "Email is already taken")
+        }
+        user.email = email;
     }
-    user.email = email;
-    user.fullname = fullname;
-    user.save({ validateBeforeSave: false })
+    if(fullname.trim()) {
+        user.fullname = fullname;
+    }
+    try {
+        await user.save({ validateBeforeSave: false });
+    } catch (error) {
+        throw new ApiError(400, "There was a problem saving the account")
+    }
 
     return res.status(200).json(
         new ApiResponse(200, user, "Account details updatead succesfully!")
@@ -260,20 +270,20 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     if (!user) {
         throw new ApiError(400, "There was a problem updating the cover image")
     }
-    await deleteFile(oldCoverImage);
+    if(oldCoverImage) await deleteFile(oldCoverImage);
     return res.status(200)
         .json(
             new ApiResponse(200, user, "Cover Image updated succesfully!")
         )
 })
 
-const getUserChannel = asyncHandler(async(req,res) => {
-    const {username} = req.params;
-    if(!username.trim()) throw new ApiError(400,"Channel name doesn't exists")
+const getUserChannel = asyncHandler(async (req, res) => {
+    const { username } = req.params;
+    if (!username.trim()) throw new ApiError(400, "Channel name doesn't exists")
 
     const channelUser = await User.aggregate([
         {
-            $match: 
+            $match:
             {
                 username: username?.toLowerCase()
             }
@@ -283,7 +293,7 @@ const getUserChannel = asyncHandler(async(req,res) => {
                 from: "subscriptions", //Getting all the user's subscribers
                 localField: "_id",
                 foreignField: "subscriber",
-                as: "totalSubscribers"
+                as: "totalSubscribedTo"
             }
         },
         {
@@ -291,7 +301,7 @@ const getUserChannel = asyncHandler(async(req,res) => {
                 from: "subscriptions",
                 localField: "_id",
                 foreignField: "channel",
-                as: "totalSubscribedTo"
+                as: "totalSubscribers"
             }
         },
         {
@@ -304,7 +314,7 @@ const getUserChannel = asyncHandler(async(req,res) => {
                 },
                 isSubscribed: {
                     $cond: {
-                        if: {$in: [req.user?._id , "$totalSubscribers.subscriber"]},
+                        if: { $in: [req.user?._id, "$totalSubscribers.subscriber"] },
                         then: true,
                         else: false
                     }
@@ -323,15 +333,15 @@ const getUserChannel = asyncHandler(async(req,res) => {
             }
         }
     ])
-    if(!channelUser.length) {
-        throw new ApiError(400,"Channel doesn't exists or there was a problem.")
+    if (!channelUser.length) {
+        throw new ApiError(400, "Channel doesn't exists or there was a problem.")
     }
     return res.status(200).json(
-        new ApiResponse(200,channelUser[0],"User's channnel data fetched succesfully.")
+        new ApiResponse(200, channelUser[0], "User's channnel data fetched succesfully.")
     )
 })
 
-const getWatchHistory = asyncHandler(async (req,res) => {
+const getWatchHistory = asyncHandler(async (req, res) => {
     const user = await User.aggregate([
         {
             $match: {
@@ -362,9 +372,9 @@ const getWatchHistory = asyncHandler(async (req,res) => {
                     },
                     {
                         $addFields: {
-                              owner: {
+                            owner: {
                                 $first: "$videoOwner"
-                              }  
+                            }
                         }
                     }
                 ]
@@ -373,7 +383,7 @@ const getWatchHistory = asyncHandler(async (req,res) => {
         }
     ])
     res.status(200).json(
-        new ApiResponse(200,user[0].watchHistory,"Watch history succesfully fetched!")
+        new ApiResponse(200, user[0].watchHistory, "Watch history succesfully fetched!")
     )
 })
 

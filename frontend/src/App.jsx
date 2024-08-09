@@ -16,7 +16,6 @@ function App() {
         const response = await axios.get("/api/v1/users/currentuser")
         if (response && response.data) {
           dispatch(login(response.data.data))
-          console.log("login")
         }
         else {
           dispatch(logout())

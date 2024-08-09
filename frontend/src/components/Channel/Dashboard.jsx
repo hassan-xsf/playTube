@@ -1,9 +1,20 @@
-import React from 'react'
+import React , {useEffect} from 'react'
 import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router'
 import { Outlet } from 'react-router'
 
 function Dashboard() {
     const mode = useSelector(state => state.theme.mode)
+    
+    const navigate = useNavigate();
+    const channelName = useSelector(state => state.auth.channelUsername)
+    const authData = useSelector(state => state.auth.authData)
+
+    useEffect(() => {
+        if(channelName !== authData.username) {
+            return navigate("/notfound")
+        }
+    } , [])
     return (
         <>
             <div className="flex flex-col gap-5 xl:gap-0 justify-between w-[90%] lg:w-[50%] xl:w-[90%] mx-auto xl:flex-row">

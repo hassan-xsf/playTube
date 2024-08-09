@@ -6,7 +6,7 @@ import { ApiError } from '../utils/ApiError.js'
 import { ApiResponse } from '../utils/ApiResonse.js'
 
 
-const getChannelSubscribers = asyncHandler(async (req, res) => {
+const getChannelSubscribedTo = asyncHandler(async (req, res) => {
     const { channel } = req.params;
     if (!channel) {
         throw new ApiError(200, "Video not found!")
@@ -22,7 +22,7 @@ const getChannelSubscribers = asyncHandler(async (req, res) => {
                 $lookup: {
                     from: "subscriptions",
                     localField: "_id",
-                    foreignField: "channel",
+                    foreignField: "subscriber",
                     as: "subscribedTo",
                     pipeline: [
                         {
@@ -55,7 +55,6 @@ const getChannelSubscribers = asyncHandler(async (req, res) => {
             },
             {
                 $project: {
-                    totalSubscribedTo: 1,
                     subscribedToName: 1,
                     chanelSubscribers: 1,
                     createdAt: 1
@@ -83,17 +82,16 @@ const toggleSubscribeChannel = asyncHandler(async (req, res) => {
     if (!findChannel) {
         throw new ApiError(400, "Channel doesn't exists or there was a problem.")
     }
-
-    const subFound = await Subscription.findOneAndDelete(
-        { channel: findChannel._id },
-        { subscriber: req.user._id }
-    )
+    const subFound = await Subscription.findOneAndDelete({
+        subscriber: req.user._id,
+        channel: findChannel._id
+    })
 
     let sub;
     if (!subFound) {
         sub = await Subscription.create({
-            channel: findChannel._id,
-            subscriber: req.user._id
+            subscriber: req.user._id,
+            channel: findChannel._id
         })
         if (!sub) {
             throw new ApiError(300, "There was a problem subscribing the channel")
@@ -121,10 +119,10 @@ const toggleSubscribeVideo = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Channel doesn't exists or there was a problem.")
     }
 
-    const subFound = await Subscription.findOneAndDelete(
-        { channel: findChannel.owner },
-        { subscriber: req.user._id }
-    )
+    const subFound = await Subscription.findOneAndDelete({
+        channel: findChannel.owner,
+        subscriber: req.user._id
+    })
 
     let sub;
     if (!subFound) {
@@ -171,5 +169,5 @@ export {
     isSubscribed,
     toggleSubscribeChannel,
     toggleSubscribeVideo,
-    getChannelSubscribers
+    getChannelSubscribedTo
 }
