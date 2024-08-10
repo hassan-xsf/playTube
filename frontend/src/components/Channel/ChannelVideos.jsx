@@ -1,47 +1,45 @@
-import React, { useEffect , useState } from 'react'
-import {VideoBox} from '../index'
+import React, { useEffect, useState } from 'react'
+import { VideoBox } from '../index'
 import axios from 'axios'
 import { useParams } from 'react-router'
-
+import { VideoBoxSkeleton } from '../index'
 
 function ChannelVideos() {
 
-    const [loading,setLoading] = useState(false)
-    const [VideosData,setVideosData] = useState({})
-    const {channelId} = useParams();
+    const [loading, setLoading] = useState(true)
+    const [VideosData, setVideosData] = useState({})
+    const { channelId } = useParams();
     useEffect(() => {
-        ;(async () => {
+        ; (async () => {
             try {
                 const videosData = await axios.get(`/api/v1/users/videos/${channelId}`)
                 setVideosData(videosData.data.data.userVideos)
-                console.log(videosData.data.data.userVideos)
+
             } catch (error) {
                 console.log(error?.response?.data)
             }
             finally {
-                setLoading(true)
+                setLoading(false)
             }
         })
-        ()
-    })
+            ()
+    }, [])
     return (
-        loading &&
         <>
             <span className="font-bold text-2xl sm:text-3xl text-center sm:text-start">
                 Videos
             </span>
             <div className="grid grid-cols-1 gap-y-16 mb-24 lg:grid-cols-2 xl:grid-cols-3 5xl:grid-cols-3 6xl:grid-cols-4">
-                {
-                    VideosData.map((data) => (
-                        <VideoBox key = {data._id} showChannelName={false} className={"w-[90%] h-[90%]"} data = {data}/>
+
+                {loading ? (
+                    Array.from({ length: 10 }).map((_, ind) => (
+                        <VideoBoxSkeleton className={"w-[90%] h-[90%]"} key={ind + 100} />
                     ))
-                }
-                {/* <VideoBox showChannelName={false} className={"w-[90%] h-[90%]"} />
-                <VideoBox showChannelName={false} className={"w-[90%] h-[90%]"} />
-                <VideoBox showChannelName={false} className={"w-[90%] h-[90%]"} />
-                <VideoBox showChannelName={false} className={"w-[90%] h-[90%]"} />
-                <VideoBox showChannelName={false} className={"w-[90%] h-[90%]"} />
-                <VideoBox showChannelName={false} className={"w-[90%] h-[90%]"} /> */}
+                ) : (
+                    VideosData.map((data) => (
+                        <VideoBox key={data._id} showChannelName={false} className={"w-[90%] h-[90%]"} data={data} />
+                    ))
+                )}
             </div>
         </>
     )

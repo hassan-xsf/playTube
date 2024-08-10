@@ -5,6 +5,7 @@ import { useParams, useNavigate } from 'react-router'
 import { dateToFormat } from '../utils/dateToFormat'
 import axios from "axios"
 import { Outlet } from 'react-router'
+import {VideoSkeleton} from './index'
 
 function Video() {
 
@@ -30,12 +31,15 @@ function Video() {
                 if (videoInfo) {
                     setVideoData(videoInfo.data.data[0])
                     settotalSub(videoInfo.data.data[0].totalSubs)
-                    await axios.patch(`/api/v1/video/${videoId}`)
+                
+                    await axios.patch(`/api/v1/video/${videoId}`) // increasing the view count!
                     const likes = await axios.get(`/api/v1/likes/video/totallikes/${videoId}`) 
                     setTotalLikes(likes.data.data || 0)
 
                 }
                 if (isLogged) {
+                    const test = await axios.patch(`/api/v1/users/updatehistory/${videoId}`) // user history add 
+                    console.log(test.data.data.watchHistory)
                     const subData = await axios.get(`/api/v1/sub/hassubbed/${videoId}`)
                     if (subData) {
                         setisSubbed(subData.data.data.subbed)
@@ -90,7 +94,8 @@ function Video() {
     return (
         <>
             {
-                loading ? <div className = "pt-32 text-8xl text-red-900 text-center"></div> :
+                loading ? <VideoSkeleton/>
+                :
                 <div className="pt-32 h-full min-h-screen tracking-tighter bg-theme">
                     <section className="min-h-screen w-[93%] mx-auto flex flex-col lg:flex-row items-start gap-10">
                         <div className="w-[90%] lg:w-[66%] mx-auto flex flex-col justify-center">

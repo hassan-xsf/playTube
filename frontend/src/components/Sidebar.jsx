@@ -14,7 +14,8 @@ function SideBar() {
       ; (async () => {
         try {
           const req = await axios.get(`/api/v1/sub/all/${authData.username}`)
-          req.data.data.map((e) => {
+          const lastEntries = req.data.data.slice(-5)
+          lastEntries?.map((e) => {
               setSubsData(prev => [...prev, {fullname: e.subscribedToName.fullname, avatar: e.subscribedToName.avatar , username: e.subscribedToName.username}])
           })
 
@@ -30,8 +31,8 @@ function SideBar() {
   }, [])
 
   return (
-    <div className="fixed top-20 left-0 h-screen w-80 tracking-tighter hidden bg-theme sm:block">
-      <div className="px-6 w-full mx-auto flex flex-col gap-1.5 py-4">
+     <div className="shadow-2xl dark:shadow-white shadow-black sm:shadow-none z-50 fixed bottom-0 right-0 w-full h-20 sm:h-screen sm:w-80 tracking-tighter bg-theme sm:left-0 sm:bottom-0 sm:top-20 sm:block">
+      <div className="px-6 w-full mx-auto flex flex-row justify-center sm:justify-start sm:flex-col gap-1.5 py-4">
         <SideItems Logo={(props) => customSVG({ color: mode === 'dark' ? 'white' : 'black', ...props })} text="Home" slug="/" />
         <SideItems
           Logo={(props) => customSVG({ color: mode === 'dark' ? 'white' : 'black', ...props, path: "M10 18v-6l5 3-5 3zm7-15H7v1h10V3zm3 3H4v1h16V6zm2 3H2v12h20V9zM3 10h18v10H3V10z" })}
@@ -59,7 +60,7 @@ function SideBar() {
 
 
                 <div className="mt-5 mb-2 mx-4">
-                  <span className="font-bold text-lg text-theme">Subscriptions</span>
+                  <span className="font-bold text-lg text-theme hidden sm:block">Subscriptions</span>
                 </div>
                 {
 
@@ -110,14 +111,14 @@ function SideItems({ Logo, text, slug }) {
       to={slug}
       className={({ isActive }) => `cursor-pointer text-white flex justify-start gap-5 items-center rounded-xl py-4 px-4 h-14 hover:bg-black hover:bg-opacity-10 ${isActive && slug !== '/login' ? "bg-black bg-opacity-10 dark:bg-gray-100 dark:bg-opacity-10" : "bg-black bg-opacity-0 dark:bg-gray-100 dark:bg-opacity-0"}`}>
       <Logo />
-      <span className="font-semibold text-md text-theme">{text}</span>
+      <span className="font-semibold text-md text-theme hidden sm:block">{text}</span>
     </ NavLink>
   )
 }
 
 function SubscriptionCard({ channelLogo, channelName , username}) {
   return (
-    <Link to = {`c/${username}/videos`} className="text-white flex justify-start gap-4 items-center border-black rounded-md py-4 px-4 h-10">
+    <Link to = {`c/${username}/videos`} className="text-white justify-start gap-4 items-center border-black rounded-md py-4 px-4 h-10 hidden sm:flex">
       <div className="rounded-full size-9 bg-white flex justify-center items-center overflow-hidden">
         <img className="w-full h-full object-contain" src={channelLogo} />
       </div>

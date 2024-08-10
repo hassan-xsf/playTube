@@ -30,28 +30,40 @@ function Subscribed() {
 
 
     return (
-        loading ||
-        (
-            <>
-                <span className="font-bold text-2xl sm:text-3xl text-center sm:text-start">
-                    Subscribed: {subscribedData.length}
-                </span>
-                <div className="grid grid-cols-1 gap-y-8 mb-24 bg-theme lg:p-10">
-                    {
-                        subscribedData.map((e, indx) =>
-                            <SubscribedToBox date={e.date} fullname={e.fullname} avatar={e.avatar} username={e.username} key={indx} />
-                        )
-                    }
-                </div>
-            </>
-        )
+
+        <>
+            <span className="font-bold text-2xl sm:text-3xl text-center sm:text-start">
+                Subscribed: {subscribedData.length}
+            </span>
+            <div className="grid grid-cols-1 gap-y-8 mb-24 bg-theme lg:p-10">
+                {loading ? (
+                    Array.from({ length: 5 }).map((_, ind) => (
+                        <SkeletonSubscribedToBox key={ind + 100} />
+                    ))
+                ) : (
+                    subscribedData.map((e, indx) =>
+                        indx <= 10 && <SubscribedToBox date={e.date} fullname={e.fullname} avatar={e.avatar} username={e.username} key={indx} />
+                    )
+                )}
+            </div>
+        </>
 
     )
 }
+function SkeletonSubscribedToBox({ }) {
+    return (
+        <>
+            <span className="animate-pulse hover:scale-105 h-20 hover:transition-all flex items-center lg:items-start justify-center gap-4 bg-black bg-opacity-10 dark:bg-gray-100 dark:bg-opacity-10 rounded-3xl p-2 hover:bg-opacity-20 dark:hover:bg-opacity-40">
+
+            </span>
+        </>
+    )
+}
+
 function SubscribedToBox({ date, fullname, avatar, username }) {
     return (
         <>
-            <Link to = {`/c/${username}`} className="hover:scale-105  hover:transition-all flex items-center lg:items-start justify-center gap-4 bg-black bg-opacity-10 dark:bg-gray-100 dark:bg-opacity-10 rounded-3xl p-2 hover:bg-opacity-20 dark:hover:bg-opacity-40">
+            <Link to={`/c/${username}`} className="hover:scale-105  hover:transition-all flex items-center lg:items-start justify-center gap-4 bg-black bg-opacity-10 dark:bg-gray-100 dark:bg-opacity-10 rounded-3xl p-2 hover:bg-opacity-20 dark:hover:bg-opacity-40">
                 <div className="rounded-full size-16 bg-white flex justify-center items-center overflow-hidden">
                     <img className="w-full h-full object-contain rounded-full" src={avatar} />
                 </div>

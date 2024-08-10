@@ -20,6 +20,8 @@ import Logout from "./Logout.jsx";
 import ErrorBoundary from "./ErrorBoundary.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import ShareVideoModal from "./ShareVideoModal.jsx";
+import VideoBoxSkeleton from "./Skeletons/VideoBoxSkeleton.jsx";
+import VideoSkeleton from "./Skeletons/VideoSkeleton.jsx";
 
 export {
     ProtectedRoute,
@@ -43,5 +45,8 @@ export {
     InputBox,
     Logout,
     ErrorBoundary,
-    ShareVideoModal
+    ShareVideoModal,
+    VideoSkeleton,
+    // Skeletons
+    VideoBoxSkeleton,
 }

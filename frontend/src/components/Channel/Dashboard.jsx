@@ -34,7 +34,8 @@ function Dashboard() {
             ()
     }, [])
     return (
-        loading &&
+        !loading ? <div className="flex flex-col gap-5 xl:gap-0 justify-between w-[90%] h-screen lg:w-[50%] xl:w-[90%] mx-auto xl:flex-row"></div>
+        :
         <>
             <div className="flex flex-col gap-5 xl:gap-0 justify-between w-[90%] lg:w-[50%] xl:w-[90%] mx-auto xl:flex-row">
                 <span className="text-3xl font-semibold text-theme text-center xl:text-start">Welcome back, {authData.fullname}</span>
