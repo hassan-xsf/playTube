@@ -1,12 +1,32 @@
 import React from 'react'
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 
 function DeleteVideoModal() {
     const navigate = useNavigate();
+    const { videoId } = useParams();
+    const authData = useSelector(state => state.auth.authData)
 
     const handleClose = () => {
         navigate(-1)
+    }
+    const deleteVideo = () => {
+        if (authData) {
+
+            ; (async () => {
+                try {
+                    await axios.delete(`/api/v1/video/${videoId}`)
+                    navigate(`/c/${authData.username}/dashboard`);
+                }
+                catch (error) {
+                    console.log("Invalid video Id found!")
+                    navigate(`/c/${authData.username}/dashboard`);
+                }
+            })
+            ()
+        }
     }
     return (
         <>
@@ -32,7 +52,7 @@ function DeleteVideoModal() {
                             <span className="text-base block font-semibold text-theme">Are you sure you want to delete the video? No deleted videos can be recovered
                                 <span className="block text-red-600 pt-4">Remember: This is a non-repeatable action</span></span>
                         </h2>
-                        <button onClick = {handleClose} className="h-6 w-6 shrink-0">
+                        <button onClick={handleClose} className="h-6 w-6 shrink-0">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
@@ -49,10 +69,10 @@ function DeleteVideoModal() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
 
-                        <button className="py-2 px-4 bg-red-600 text-white text-xl font-bold rounded-md dark:text-black">
+                        <button onClick={deleteVideo} className="py-2 px-4 bg-red-600 text-white text-xl font-bold rounded-md dark:text-black">
                             Delete
                         </button>
-                        <button onClick = {handleClose} className="py-2 px-4 bg-black dark:bg-white text-white text-xl font-bold rounded-md dark:text-black">
+                        <button onClick={handleClose} className="py-2 px-4 bg-black dark:bg-white text-white text-xl font-bold rounded-md dark:text-black">
                             Cancel
                         </button>
                     </div>

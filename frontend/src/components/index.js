@@ -10,7 +10,6 @@ import Channel from './Channel/Channel'
 import VideoBox from './VideoBox'
 import EditInfo from './Channel/EditInfo'
 import UploadVideoModal from "./Channel/UploadVideoModal";
-import UploadingVideo from "./Channel/UploadingVideo";
 import DeleteVideoModal from "./Channel/DeleteVideoModal";
 import Subscribed from "./Channel/Subscribed";
 import UserHistory from "./Channel/UserHistory";
@@ -20,6 +19,7 @@ import InputBox from "./InputBox.jsx"
 import Logout from "./Logout.jsx";
 import ErrorBoundary from "./ErrorBoundary.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
+import ShareVideoModal from "./ShareVideoModal.jsx";
 
 export {
     ProtectedRoute,
@@ -36,12 +36,12 @@ export {
     EditInfo,
     Dashboard,
     UploadVideoModal,
-    UploadingVideo,
     DeleteVideoModal,
     Subscribed,
     UserHistory,
     ChannelVideos,
     InputBox,
     Logout,
-    ErrorBoundary
+    ErrorBoundary,
+    ShareVideoModal
 }

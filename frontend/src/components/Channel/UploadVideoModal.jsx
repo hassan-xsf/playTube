@@ -72,8 +72,7 @@ function UploadVideoModal() {
                 },
             });
             if(res) {
-                navigate(-1)
-                // succesfull redirect-to-video
+                navigate(`/video/${res.data.data._id}`); 
                 console.log(res.data.data)
             }
         } catch (error) {
@@ -152,7 +151,7 @@ function UploadVideoModal() {
                                 </span>
                                 <input {...register("video", { required: true })} disabled={clicked} type="file" accept={"video/*"} id="upload-video" className="sr-only" />
                                 <label htmlFor="upload-video" className="cursor-pointer py-2 px-4 bg-black dark:bg-white text-white text-md sm:text-xl font-bold rounded-md dark:text-black">
-                                    Select Video
+                                    Upload Video
                                 </label>
                             </div>
                             <label htmlFor="upload-video" className="cursor-pointer font-semibold py-2 text-md sm:text-xl text-theme">

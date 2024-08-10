@@ -108,7 +108,7 @@ function SideItems({ Logo, text, slug }) {
 
     <NavLink
       to={slug}
-      className={({ isActive }) => `cursor-pointer text-white flex justify-start gap-5 items-center rounded-xl py-4 px-4 h-14 hover:bg-black hover:bg-opacity-10 ${isActive ? "bg-black bg-opacity-10 dark:bg-gray-100 dark:bg-opacity-10" : "bg-black bg-opacity-0 dark:bg-gray-100 dark:bg-opacity-0"}`}>
+      className={({ isActive }) => `cursor-pointer text-white flex justify-start gap-5 items-center rounded-xl py-4 px-4 h-14 hover:bg-black hover:bg-opacity-10 ${isActive && slug !== '/login' ? "bg-black bg-opacity-10 dark:bg-gray-100 dark:bg-opacity-10" : "bg-black bg-opacity-0 dark:bg-gray-100 dark:bg-opacity-0"}`}>
       <Logo />
       <span className="font-semibold text-md text-theme">{text}</span>
     </ NavLink>

@@ -3,7 +3,6 @@ import App from '../App.jsx'
 import {
     ListVideoPage,
     HomeVideoPage,
-    Video,
     Navbar,
     Login,
     Register,
@@ -14,12 +13,14 @@ import {
     EditInfo,
     UserHistory,
     UploadVideoModal,
-    UploadingVideo,
     DeleteVideoModal,
     Logout,
+    Video,
     ErrorBoundary,
-    ProtectedRoute
+    ProtectedRoute,
+    ShareVideoModal
 } from '../components/index.js'
+
 
 export const router = createBrowserRouter([
     {
@@ -86,11 +87,7 @@ export const router = createBrowserRouter([
                                 element: <UploadVideoModal />,
                             },
                             {
-                                path: 'uploading',
-                                element: <UploadingVideo />,
-                            },
-                            {
-                                path: 'delete',
+                                path: 'delete/:videoId',
                                 element: <DeleteVideoModal />,
                             }
                         ]
@@ -111,9 +108,17 @@ export const router = createBrowserRouter([
         path: '/video/:videoId',
         element: (
             <>
-                <Navbar />
-                <Video />
+                <ProtectedRoute required={false} permission = {true}>
+                    <Navbar />
+                    <Video />
+                </ProtectedRoute>
             </>
-        )
+        ),
+        children: [
+            {
+                path: 'share',
+                element: <ShareVideoModal />
+            }
+        ]
     }
 ])
