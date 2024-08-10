@@ -340,6 +340,60 @@ const getUserChannel = asyncHandler(async (req, res) => {
         new ApiResponse(200, channelUser[0], "User's channnel data fetched succesfully.")
     )
 })
+// const getUserVideos = asyncHandler(async (req, res) => {
+//     const { username } = req.params;
+//     if (!username.trim()) throw new ApiError(400, "Channel name doesn't exists")
+
+//     const userVideos = await User.aggregate([
+//         {
+//             $match: {
+//                 username: username
+//             },
+//         },
+//         {
+//             $lookup: {
+//                 from: "videos",
+//                 localField: "_id",
+//                 foreignField: "owner",
+//                 as: "userVideos",
+//                 pipeline: [
+//                     {
+//                         $project: {
+//                             _id: 1,
+//                             createdAt: 1,
+//                             title: 1,
+//                             thumbnail: 1,
+//                             views: 1,
+//                             duration: 1
+//                         }
+//                     },
+//                     {
+//                         $sort: { "views": -1 }
+//                     },
+//                 ]
+//             }
+//         },
+//         {
+//             $addFields: {
+//                 videoOwner: {
+//                     avatar: '$avatar',
+//                     username: '$username',
+//                     fullname: '$fullname'
+//                 }
+//             }
+//         },
+//         {
+//             $project: {
+//                 userVideos: 1,
+//                 videoOwner: 1
+//             }
+//         }
+//     ]
+//     )
+//     res.status(200).json(
+//         new ApiResponse(200, userVideos[0], "User's videos data has been fetched!")
+//     )
+// })
 const getUserVideos = asyncHandler(async (req, res) => {
     const { username } = req.params;
     if (!username.trim()) throw new ApiError(400, "Channel name doesn't exists")
@@ -363,7 +417,8 @@ const getUserVideos = asyncHandler(async (req, res) => {
                             createdAt: 1,
                             title: 1,
                             thumbnail: 1,
-                            views: 1
+                            views: 1,
+                            duration: 1
                         }
                     },
                     {
@@ -374,7 +429,7 @@ const getUserVideos = asyncHandler(async (req, res) => {
         },
         {
             $project: {
-                userVideos: 1
+                userVideos: 1,
             }
         }
     ]
@@ -382,6 +437,27 @@ const getUserVideos = asyncHandler(async (req, res) => {
     res.status(200).json(
         new ApiResponse(200, userVideos[0], "User's videos data has been fetched!")
     )
+})
+const updateUserHistory = asyncHandler(async (req, res) => {
+    const {videoId} = req.params;
+    if(!videoId) throw new ApiError(400,"No video Id found!")
+
+    const user = await User.findByIdAndUpdate(req.user?._id,
+        {
+            $addToSet: {
+                watchHistory: videoId
+            }
+        },
+        { new: true }
+    ).select("watchHistory")
+
+    if (!user) {
+        throw new ApiError(400, "There was a problem updating the user's histor")
+    }
+    return res.status(200)
+        .json(
+            new ApiResponse(200, user, "User's history has been updated")
+        )
 })
 const getUserDashboard = asyncHandler(async (req, res) => {
     const dashData = await User.aggregate([
@@ -477,7 +553,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
                             from: "users",
                             localField: "owner",
                             foreignField: "_id",
-                            as: "videoOwner",
+                            as: "videoOwnerId",
                             pipeline: [{
                                 $project: {
                                     fullname: 1,
@@ -489,18 +565,22 @@ const getWatchHistory = asyncHandler(async (req, res) => {
                     },
                     {
                         $addFields: {
-                            owner: {
-                                $first: "$videoOwner"
+                            videoOwner: {
+                                $first: "$videoOwnerId"
                             }
                         }
                     }
                 ]
             }
-            // FURTHER DRILL TO AVOID user[0] ????
+        },
+        {
+            $project: {
+                watchHistory: 1
+            }
         }
     ])
     res.status(200).json(
-        new ApiResponse(200, user[0].watchHistory, "Watch history succesfully fetched!")
+        new ApiResponse(200, user[0], "Watch history succesfully fetched!")
     )
 })
 
@@ -517,5 +597,6 @@ export {
     getUserChannel,
     getWatchHistory,
     getUserDashboard,
-    getUserVideos
+    getUserVideos,
+    updateUserHistory
 }
