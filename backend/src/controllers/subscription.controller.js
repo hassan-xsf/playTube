@@ -123,6 +123,7 @@ const isSubscribed = asyncHandler(async (req, res) => {
         channel: findChannel.owner,
         subscriber: req.user._id
     })
+    // TEST
     return res.status(200).json(
         new ApiResponse(200, {"subbed": found ? true : false}, (found ? "The user is subscribed!" : "The user is not subscribed"))
     )
