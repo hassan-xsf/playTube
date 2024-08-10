@@ -97,9 +97,10 @@ const toggleSubscribeChannel = asyncHandler(async (req, res) => {
             throw new ApiError(300, "There was a problem subscribing the channel")
         }
     }
+    const totalSubs = await Subscription.countDocuments({channel: findChannel._id})
 
     return res.status(200).json(
-        new ApiResponse(200, sub, subFound ? "Channel un-subscribed" : "Channel subscribed")
+        new ApiResponse(200, {subbed: subFound ? false : true , totalSub: totalSubs}, subFound ? "Channel un-subscribed" : "Channel subscribed")
     )
 
 })

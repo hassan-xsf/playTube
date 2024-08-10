@@ -206,7 +206,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         }
         user.email = email;
     }
-    if(fullname.trim()) {
+    if (fullname.trim()) {
         user.fullname = fullname;
     }
     try {
@@ -270,7 +270,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     if (!user) {
         throw new ApiError(400, "There was a problem updating the cover image")
     }
-    if(oldCoverImage) await deleteFile(oldCoverImage);
+    if (oldCoverImage) await deleteFile(oldCoverImage);
     return res.status(200)
         .json(
             new ApiResponse(200, user, "Cover Image updated succesfully!")
@@ -340,6 +340,123 @@ const getUserChannel = asyncHandler(async (req, res) => {
         new ApiResponse(200, channelUser[0], "User's channnel data fetched succesfully.")
     )
 })
+const getUserVideos = asyncHandler(async (req, res) => {
+    const { username } = req.params;
+    if (!username.trim()) throw new ApiError(400, "Channel name doesn't exists")
+
+    const userVideos = await User.aggregate([
+        {
+            $match: {
+                username: username
+            },
+        },
+        {
+            $lookup: {
+                from: "videos",
+                localField: "_id",
+                foreignField: "owner",
+                as: "userVideos",
+                pipeline: [
+                    {
+                        $project: {
+                            _id: 1,
+                            createdAt: 1,
+                            title: 1,
+                            thumbnail: 1,
+                            views: 1
+                        }
+                    },
+                    {
+                        $sort: { "views": -1 }
+                    },
+                ]
+            }
+        },
+        {
+            $project: {
+                userVideos: 1
+            }
+        }
+    ]
+    )
+    res.status(200).json(
+        new ApiResponse(200, userVideos[0], "User's videos data has been fetched!")
+    )
+})
+const getUserDashboard = asyncHandler(async (req, res) => {
+    const dashData = await User.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(req.user._id)
+            },
+        },
+        {
+            $lookup: {
+                from: "subscriptions",
+                localField: "_id",
+                foreignField: "channel",
+                as: "channelSubscribers"
+            }
+        },
+        {
+            $addFields: {
+                totalSubs: { $size: "$channelSubscribers" }
+            }
+        },
+        {
+            $lookup: {
+                from: "videos",
+                localField: "_id",
+                foreignField: "owner",
+                as: "userVideos",
+                pipeline: [
+                    {
+                        $project: {
+                            _id: 1,
+                            createdAt: 1,
+                            title: 1,
+                            thumbnail: 1,
+                            views: 1
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "likes",
+                            localField: "_id",
+                            foreignField: "video",
+                            as: "likes"
+                        }
+                    },
+                    {
+                        $addFields: {
+                            totalLikes: { $size: "$likes" } // Count likes for each video
+                        }
+                    },
+                    {
+                        $sort: { "views": -1 }
+                    },
+                ]
+            }
+        },
+        {
+            $unwind: "$userVideos"
+        },
+        {
+            $group: {
+                _id: "$_id",
+                totalViews: { $sum: "$userVideos.views" },
+                totalLikes: { $sum: "$userVideos.totalLikes" }, // Sum up total likes from all videos
+                userVideos: { $push: "$userVideos" },
+                totalSubs: { $first: "$totalSubs" }
+            }
+        }
+    ]
+    )
+    res.status(200).json(
+        new ApiResponse(200, dashData[0], "Dashboard data has been fetched!")
+    )
+})
+
 
 const getWatchHistory = asyncHandler(async (req, res) => {
     const user = await User.aggregate([
@@ -398,5 +515,7 @@ export {
     updateUserAvatar,
     updateUserCoverImage,
     getUserChannel,
-    getWatchHistory
+    getWatchHistory,
+    getUserDashboard,
+    getUserVideos
 }

@@ -27,9 +27,10 @@ const toggleVideoLike = asyncHandler(async (req,res) => {
             throw new ApiError(400,"There was a problem liking this video")
         }
     }
+    const totalLikes = await Like.countDocuments({video: videoId})
 
     return res.status(200).json(
-        new ApiResponse(200,like, likeFound ? "Video disliked" : "Video liked")
+        new ApiResponse(200,{liked: likeFound ? false : true , totalLikes: totalLikes}, likeFound ? "Video disliked" : "Video liked")
     )
 })
 const toggleCommentLike = asyncHandler(async (req,res) => {
@@ -71,7 +72,7 @@ const hasLikedVideo = asyncHandler(async (req,res) => {
         {likedBy: req.user?._id}
     )
     return res.status(200).json(
-        new ApiResponse(200,found ? {found} : {},"The user like on video has been fetched!")
+        new ApiResponse(200, {liked: found ? true : false},"The user like on video has been fetched!")
     )    
 })
 const hasLikedComment = asyncHandler(async (req,res) => {

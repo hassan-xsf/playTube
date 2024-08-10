@@ -6,16 +6,18 @@ import
     uploadVideo,
     deleteVideo,
     getVideoById,
-    getAllVideos
+    getAllVideos,
+    incrementView
 }
 from "../controllers/video.controller.js";
 
 const router = Router()
 
 
-router.use(verifyJWT)
+// router.use(verifyJWT)
 
 router.route("/upload").post(
+    verifyJWT,
     upload.fields([
         {
             name: "thumbnail",
@@ -32,8 +34,10 @@ router.route("/upload").post(
 
 router.route("/all").get(getAllVideos)
 
+
 router.route("/:videoId")
-    .delete(deleteVideo)
+    .delete(verifyJWT , deleteVideo)
     .get(getVideoById)
+    .patch(incrementView)
 
 export default router;

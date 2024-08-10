@@ -7,6 +7,25 @@ import { uploadFile, deleteFile } from '../utils/cloudinary.js'
 import { ApiResponse } from '../utils/ApiResonse.js'
 import mongoose from "mongoose";
 
+
+
+const incrementView = asyncHandler(async (req, res) => {
+    const { videoId } = req.params;
+    if (!videoId) {
+        throw new ApiError(400, "Video not found!")
+    }
+    const updateVideo = await Video.findOneAndUpdate(
+        { _id: videoId},
+        {$inc: {views: 1}},
+        {new: true}
+    )
+    if(!updateVideo) throw new ApiError(400,"Problem retreiving the video Id!")
+
+    return res.status(200).json(
+        new ApiResponse(200, updateVideo, "Video views count has been incremented!")
+    )
+})
+
 const getAllVideos = asyncHandler(async (req, res) => {
 
     const videos = await Video.aggregate([
@@ -95,10 +114,9 @@ const deleteVideo = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Video not found!")
     }
     const deleteVideo = await Video.findOneAndDelete({
-        _id: videoId,
+        _id: new mongoose.Types.ObjectId(videoId),
         owner: req.user._id
     })
-    //leting likes and comments for the particular video
     if (deleteVideo) {
         await Like.deleteMany({
             video: videoId
@@ -183,5 +201,6 @@ export {
     uploadVideo,
     deleteVideo,
     getVideoById,
-    getAllVideos
+    getAllVideos,
+    incrementView
 }
