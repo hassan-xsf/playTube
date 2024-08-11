@@ -251,12 +251,6 @@ function Comment() {
                 if (commetInfo) {
                     setCommentData(commetInfo.data.data)
                 }
-                if (isLogged) {
-                    // const subData = await axios.get(`/api/v1/sub/hassubbed/${videoId}`)
-                    // if (subData) {
-                    //     setisSubbed(subData.data.data.subbed)
-                    // }
-                }
             }
             catch (error) {
                 console.log(error.message)
@@ -351,10 +345,10 @@ function CommentBox({ data, deleteComment, commentLikeHandle, commentdisLikeHand
 
 function VideoSuggestion({ data }) {
     return (<>
-        <div className="rounded-md flex bg-theme">
-            <div className="relative w-[60%]">
+        <Link to = {`/video/${data._id}`} className="hover:scale-105 hover:transition-all rounded-md flex bg-theme">
+            <div className="relative w-[40%]">
                 <img className="w-full h-full object-fill rounded-2xl" src={data.thumbnail} />
-                <span className="bg-black bg-opacity-70 text-white font-semibold text-sm sm:text-md py-0.5 px-1 rounded-md tracking-wide absolute bottom-2 right-3">{formatSeconds(data.duration)}</span>
+                <span className="bg-black bg-opacity-70 text-white font-semibold text-xs py-0.5 px-1 rounded-md tracking-wide absolute bottom-2 right-2">{formatSeconds(data.duration)}</span>
             </div>
             <div className="flex mt-2">
                 <div className="px-3 flex flex-col">
@@ -367,7 +361,7 @@ function VideoSuggestion({ data }) {
                     <span className="font-[600]  text-sm sm:text-md text-black text-opacity-80 text-md leading-tight  dark:text-white dark:text-opacity-50">{data.views} views • {dateToFormat(data.createdAt)} </span>
                 </div>
             </div>
-        </div>
+        </Link>
     </>
     )
 }

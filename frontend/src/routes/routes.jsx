@@ -27,7 +27,9 @@ export const router = createBrowserRouter([
     {
         path: '/',
         element: <App />,
-        errorElement: <ErrorBoundary />,
+        errorElement: (
+            <ErrorBoundary />
+        ),
         children: [
             {
                 path: "",
@@ -35,7 +37,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: '/about',
-                element: <About/>
+                element: <About />
             },
             {
                 path: '/search/:searchParams',
