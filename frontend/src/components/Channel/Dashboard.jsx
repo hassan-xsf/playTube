@@ -64,7 +64,7 @@ function Dashboard() {
                         </span>
                         <span className="text-3xl lg:text-2xl  font-semibold text-theme text-center">Total views</span>
                     </div>
-                    <span className="text-3xl lg:text-4xl 2xl:text-6xl font-semibold text-theme text-center">{dashData.totalViews}</span>
+                    <span className="text-3xl lg:text-4xl 2xl:text-6xl font-semibold text-theme text-center">{dashData?.totalViews || 0}</span>
                 </div>
                 <div className="grid grid-rows-2 justify-center py-6 h-48 bg-black bg-opacity-10 dark:bg-gray-100 dark:bg-opacity-10 rounded-xl ">
                     <div className="flex items-center justify-center mb-10 gap-4">
@@ -73,7 +73,7 @@ function Dashboard() {
                         </span>
                         <span className="text-3xl lg:text-2xl  font-semibold text-theme text-start truncate">Total subscribers</span>
                     </div>
-                    <span className="text-3xl lg:text-4xl 2xl:text-6xl font-semibold text-theme text-center">{dashData.totalSubs}</span>
+                    <span className="text-3xl lg:text-4xl 2xl:text-6xl font-semibold text-theme text-center">{dashData?.totalSubs || 0}</span>
                 </div>
                 <div className="grid grid-rows-2 justify-center py-6 h-48 bg-black bg-opacity-10 dark:bg-gray-100 dark:bg-opacity-10 rounded-xl ">
                     <div className="flex items-center justify-center mb-10 gap-4">
@@ -82,7 +82,7 @@ function Dashboard() {
                         </span>
                         <span className="text-3xl lg:text-2xl font-semibold text-theme text-center">Total likes</span>
                     </div>
-                    <span className="text-3xl lg:text-4xl 2xl:text-6xl font-semibold text-theme text-center">{dashData.totalLikes}</span>
+                    <span className="text-3xl lg:text-4xl 2xl:text-6xl font-semibold text-theme text-center">{dashData?.totalLikes || 0}</span>
                 </div>
             </div>
             <div className="grid grid-cols-1 gap-y-8 mb-24 bg-theme lg:p-10">

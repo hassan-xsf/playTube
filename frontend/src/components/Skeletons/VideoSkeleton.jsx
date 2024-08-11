@@ -10,10 +10,7 @@ function VideoSkeleton() {
                 <div className="pt-32 h-full min-h-screen tracking-tighter bg-theme">
                     <section className="min-h-screen w-[93%] mx-auto flex flex-col lg:flex-row items-start gap-10">
                         <div className="w-[90%] lg:w-[66%] mx-auto flex flex-col justify-center">
-                            <span
-                                className="h-full w-full rounded-3xl object-contain"
-
-                            >
+                            <span className="h-full w-full rounded-3xl object-contain">
                                 <div className="animate-pulse sm:h-[300px] lg:h-[500px] xl:h-[600px] dark:bg-white dark:bg-opacity-20 bg-black bg-opacity-20 rounded-3xl "></div>
                             </span>
                             <div className="flex flex-col flex-start my-3">

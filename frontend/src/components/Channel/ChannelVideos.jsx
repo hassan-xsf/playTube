@@ -27,7 +27,7 @@ function ChannelVideos() {
     return (
         <>
             <span className="font-bold text-2xl sm:text-3xl text-center sm:text-start">
-                Videos
+                Videos: {VideosData.length}
             </span>
             <div className="grid grid-cols-1 gap-y-16 mb-24 lg:grid-cols-2 xl:grid-cols-3 5xl:grid-cols-3 6xl:grid-cols-4">
 

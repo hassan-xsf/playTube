@@ -15,13 +15,13 @@ function Video() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true)
     const isLogged = useSelector(state => state.auth.authStatus)
-    const authData = useSelector(state => state.auth.authData)
+    
     const [VideoData, setVideoData] = useState({})
 
     const mode = useSelector(state => state.theme.mode)
     const [isSubbed, setisSubbed] = useState(false)
     const [totalSub, settotalSub] = useState(0)
-    const [recommendData,setRecommendData] = useState({})
+    const [recommendData, setRecommendData] = useState({})
 
     const [isLiked, setisLiked] = useState(false)
     const [totalLikes, setTotalLikes] = useState(0)
@@ -129,7 +129,7 @@ function Video() {
                                     </Link>
                                     <div className="flex justify-between flex-grow gap-1 xsm:gap-5 lg:gap-0">
                                         <div className={`text-white ${isSubbed ? "bg-black bg-opacity-90 dark:bg-white" : "bg-black bg-opacity-5 dark:bg-gray-100 dark:bg-opacity-10"}  py-3 px-3 xl:px-6 flex justify-start items-center border-black rounded-full`}>
-                                            <button onClick={handleSubscribe} className="flex items-center hover:scale-105 hover:bg-opacity-10 dark:hover:bg-opacity-30 transition-all">
+                                            <button onClick={handleSubscribe} className="hover:-rotate-2 hover:transition-all flex items-center hover:scale-105 hover:bg-opacity-10 dark:hover:bg-opacity-30 transition-all">
                                                 {
                                                     !isSubbed ?
                                                         <>
@@ -179,13 +179,13 @@ function Video() {
                                 <Comment />
                             </div>
                             <div className="flex flex-col gap-6 w-[90%] xsm:w-3/4 sm:w-2/3 lg:w-1/3">
-                            {
-                                recommendData ? <div>No recommendations available ☹️</div>
-                                :
-                                recommendData.map((e) => (
-                                    <VideoSuggestion key = {e._id} data = {e}/>
-                                ))
-                            }
+                                {
+                                    !recommendData ? <div>No recommendations available ☹️</div>
+                                        :
+                                        recommendData.map((e) => (
+                                            <VideoSuggestion key={e._id} data={e} />
+                                        ))
+                                }
                             </div>
                         </section>
                     </div>
@@ -201,6 +201,7 @@ function Comment() {
     const { register, handleSubmit, watch, setValue } = useForm();
     const isLogged = useSelector(state => state.auth.authStatus)
     const [reloadComments, setReloadComments] = useState(false)
+    const authData = useSelector(state => state.auth.authData)
     const comment = watch("comment")
     const navigate = useNavigate();
     const { videoId } = useParams();
@@ -269,25 +270,28 @@ function Comment() {
 
     return <>
         <div className="flex flex-col my-6 px-4">
-            {!commentLoading ? <span className="text-2xl font-bold tracking-tight text-theme pb-10">Comments: {CommentData.length}</span> : <span className="text-2xl font-bold tracking-tight text-theme pb-10 dark:bg-white blur-md">Comments</span>}
-            <div className="flex items-start gap-6">
-                <div className="rounded-full size-12 bg-white flex justify-center items-center overflow-hidden">
-                    <img className="w-full h-full object-contain" src="https://yt3.ggpht.com/K6V8cVr3xJV9VFrZlgtdR3my0jdQ5qOCpXyb4UCFtcM8R3wFdpGxEk76aBG_L44c7AYdPFpstVE=s88-c-k-c0x00ffffff-no-rj" />
-                </div>
-                <form onSubmit={handleSubmit(handleComment)} className="flex flex-col w-full gap-1.5">
-                    <input
-                        className="w-full outline-none bg-theme text-md" type="text" placeholder="Add a comment.."
-                        {...register("comment", { required: true })}
-                        onFocus={() => setCommentActive(true)}
-                        onBlur={() => setCommentActive(comment ? true : false)}
-                    />
-                    <div className="w-full h-0.5 bg-opacity-40 bg-black dark:bg-white"></div>
-                    <div className="flex gap-4 justify-end text-lg mt-2 text-black">
-                        <button type="submit" className={` ${isCommentActive ? "block" : "hidden"} bg-opacity-10 font-semibold bg-black text-sm dark:bg-white py-1 rounded-full px-5`}>Comment</button>
-                        <button type="button" onClick={() => setCommentActive(false)} className={` ${isCommentActive ? "block" : "hidden"} bg-opacity-10 font-semibold bg-black text-sm dark:bg-white py-1 rounded-full px-5`}>Cancel</button>
+            {!commentLoading ? <span className="text-2xl font-bold tracking-tight text-theme pb-10">Comments: {CommentData.length}</span> : <span className="text-2xl font-bold tracking-tight text-theme pb-10 bg-theme blur-sm">Comments</span>}
+            {
+                (isLogged && authData.avatar) &&
+                <div className="flex items-start gap-6">
+                    <div className="rounded-full size-12 bg-white flex justify-center items-center overflow-hidden">
+                        <img className="w-full h-full object-contain" src={authData.avatar} />
                     </div>
-                </form>
-            </div>
+                    <form onSubmit={handleSubmit(handleComment)} className="flex flex-col w-full gap-1.5">
+                        <input
+                            className="w-full outline-none bg-theme text-md" type="text" placeholder="Add a comment.."
+                            {...register("comment", { required: true })}
+                            onFocus={() => setCommentActive(true)}
+                            onBlur={() => setCommentActive(comment ? true : false)}
+                        />
+                        <div className="w-full h-0.5 bg-opacity-40 bg-black dark:bg-white"></div>
+                        <div className="flex gap-4 justify-end text-lg mt-2 text-black">
+                            <button type="submit" className={` ${isCommentActive ? "block" : "hidden"} bg-opacity-10 font-semibold bg-black text-sm dark:bg-white py-1 rounded-full px-5`}>Comment</button>
+                            <button type="button" onClick={() => setCommentActive(false)} className={` ${isCommentActive ? "block" : "hidden"} bg-opacity-10 font-semibold bg-black text-sm dark:bg-white py-1 rounded-full px-5`}>Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            }
         </div>
         <div className="flex flex-col justify-center px-4 gap-8 pt-8 pb-8">
             {commentLoading ? (
@@ -339,17 +343,17 @@ function CommentBox({ data, deleteComment, commentLikeHandle, commentdisLikeHand
                     <svg onClick={() => commentdisLikeHandle(data._id)} className={`cursor-pointer size-5 hover:dark:text-white hover:text-primary-black hover:scale-110 hover:-rotate-6 hover:transition-all ${mode == 'dark' ? "text-[#262626]" : 'text-[#F2F2F2]'}`} viewBox="0 0 24 24" fill="currentColor" stroke={mode == 'dark' ? "white" : 'black'} xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M8.1 20.5c0 1.5 1.482 2.5 2.64 2.5.806 0 .869-.613.993-1.82.055-.53.121-1.174.267-1.93.386-2.002 1.72-4.56 2.996-5.325V8C15 5.75 14.25 5 11 5H7.227C5.051 5 4.524 6.432 4.328 6.964A15.85 15.85 0 0 1 4.315 7c-.114.306-.358.546-.638.82-.31.306-.664.653-.927 1.18-.311.623-.27 1.177-.233 1.67.023.299.044.575-.017.83-.064.27-.146.475-.225.671-.143.356-.275.686-.275 1.329 0 1.5.748 2.498 2.315 2.498H8.5S8.1 19 8.1 20.5zM18.5 15a1.5 1.5 0 0 0 1.5-1.5v-7a1.5 1.5 0 0 0-3 0v7a1.5 1.5 0 0 0 1.5 1.5z" /></svg>
                 </div>
             </div>
-            {authData._id === data.commentOwner._id && <button onClick={() => deleteComment(data._id)}><svg className="hover:stroke-red-500 size-2 w-1/2 cursor-pointer lg:size-4 my-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"></path></svg></button>}
+            {authData && authData._id === data.commentOwner._id && <button onClick={() => deleteComment(data._id)}><svg className="hover:stroke-red-500 size-2 w-1/2 cursor-pointer lg:size-4 my-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"></path></svg></button>}
 
         </div>
     </>
 }
 
-function VideoSuggestion({data}) {
+function VideoSuggestion({ data }) {
     return (<>
         <div className="rounded-md flex bg-theme">
-            <div className="relative w-[70%]">
-                <img className="w-full h-full object-contain rounded-2xl" src={data.thumbnail} />
+            <div className="relative w-[60%]">
+                <img className="w-full h-full object-fill rounded-2xl" src={data.thumbnail} />
                 <span className="bg-black bg-opacity-70 text-white font-semibold text-sm sm:text-md py-0.5 px-1 rounded-md tracking-wide absolute bottom-2 right-3">{formatSeconds(data.duration)}</span>
             </div>
             <div className="flex mt-2">

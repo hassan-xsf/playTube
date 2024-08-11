@@ -10,10 +10,8 @@ import {
 const router = Router()
 
 
-router.use(verifyJWT)
-
-router.route("/add").post(addComment)
-router.route("/delete/:videoId/:commentId").delete(deleteComment)
+router.route("/add").post(verifyJWT,addComment)
+router.route("/delete/:videoId/:commentId").delete(verifyJWT,deleteComment)
 router.route("/get/:videoId").get(viewComments)
 
 
