@@ -33,7 +33,7 @@ export const router = createBrowserRouter([
                 element: <HomeVideoPage />
             },
             {
-                path: '/search',
+                path: '/search/:searchParams',
                 element: <ListVideoPage />
             },
             {

@@ -13,10 +13,10 @@ const toggleVideoLike = asyncHandler(async (req,res) => {
     if(!video) {
         throw new ApiError(400,"Video not found!")
     }
-    const likeFound = await Like.findOneAndDelete(
-        {video: videoId},
-        {likeBy: req.user._id},
-    )
+    const likeFound = await Like.findOneAndDelete({
+        video: videoId,
+        likeBy: req.user._id,
+    })
     let like;
     if(!likeFound) {
         like = await Like.create({
@@ -40,10 +40,10 @@ const toggleCommentLike = asyncHandler(async (req,res) => {
     if(!comment) {
         throw new ApiError(400,"Video not found!")
     }
-    const commentLikeFound = await Comment.findOneAndDelete(
-        {comment: commentId},
-        {likeBy: req.user._id}
-    )
+    const commentLikeFound = await Like.findOneAndDelete({
+        comment: commentId,
+        likedBy: req.user._id
+    })
     let clData;
     if(!commentLikeFound) {
         clData = await Like.create({
@@ -55,9 +55,8 @@ const toggleCommentLike = asyncHandler(async (req,res) => {
         }
     }
 
-
     return res.status(200).json(
-        new ApiResponse(200, clData, likeFound ? "Comment disliked" : "Comment liked")
+        new ApiResponse(200, {} , commentLikeFound ? "Comment disliked" : "Comment liked")
     )
 })
 
@@ -86,7 +85,7 @@ const hasLikedComment = asyncHandler(async (req,res) => {
         {likedBy: req.user?._id}
     )
     return res.status(200).json(
-        new ApiResponse(200,found ? {found} : {},"The user like on comment has been fetched!")
+        new ApiResponse(200, {liked: found ? true : false},"The comment like on video has been fetched!")
     )    
 })
 const getTotalVideoLikes = asyncHandler(async (req,res) => {

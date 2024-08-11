@@ -5,14 +5,19 @@ import night from '../assets/night.png'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setTheme } from '../store/themeSlice'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
 
 function Navbar() {
+
+  const {register,handleSubmit} = useForm();
 
   const mode = useSelector(state => state.theme.mode)
   const isLogged = useSelector(state => state.auth.authStatus)
   const authData = useSelector(state => state.auth.authData)
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   useEffect(() => {
     
     if (mode == 'dark') {
@@ -28,6 +33,9 @@ function Navbar() {
     else dispatch(setTheme('dark'))
 
   };
+  const searchVideo = (e) => {
+    navigate(`/search/${e.search}`)
+  }
 
 
   return (
@@ -41,14 +49,14 @@ function Navbar() {
               </span>
             </Link>
             <div className="flex justify-center items-center">
-              <div className="w-[140px] relative xsm:w-[150px] sm:w-[200px] md:w-[300px] lg:w-[400px] xl:w-[500px] 3xl:w-[700px]">
-                <input className="font-[450] placeholder:text-lg ring-1 ring-black ring-opacity-20 dark:ring-white dark:ring-opacity-30 py-1 sm:py-2 lg:py-2 rounded-3xl w-[100%] px-3 text-sm lg:text-xl bg-theme" type="text" placeholder="Search" />
+              <form onSubmit = {handleSubmit(searchVideo)} className="w-[140px] relative xsm:w-[150px] sm:w-[200px] md:w-[300px] lg:w-[400px] xl:w-[500px] 3xl:w-[700px]">
+                <input {...register("search" , { required: true })} className="font-[450] placeholder:text-lg ring-1 ring-black ring-opacity-20 dark:ring-white dark:ring-opacity-30 py-1 sm:py-2 lg:py-2 rounded-3xl w-[100%] px-3 text-sm lg:text-xl bg-theme" type="text" placeholder="Search" />
                 <button className="object-contain absolute top-0 rounded-3xl right-0 bg-gray-400 bg-opacity-20 h-full flex justify-center items-center px-4 overflow-hidden dark:ring-gray-100 dark:bg-opacity-10">
                   <svg className="size-4 lg:size-6" viewBox="0 0 24 24" fill="none" stroke={mode == 'dark' ? "white" : 'black'} xmlns="http://www.w3.org/2000/svg">
                     <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </button>
-              </div>
+              </form>
             </div>
             <div className="flex justify-center items-center gap-1 sm:gap-4">
               <button onClick={toggleTheme}>

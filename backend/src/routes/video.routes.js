@@ -7,7 +7,8 @@ import
     deleteVideo,
     getVideoById,
     getAllVideos,
-    incrementView
+    incrementView,
+    searchVideo
 }
 from "../controllers/video.controller.js";
 
@@ -34,6 +35,7 @@ router.route("/upload").post(
 
 router.route("/all").get(getAllVideos)
 
+router.route("/search/:searchterm").get(searchVideo)
 
 router.route("/:videoId")
     .delete(verifyJWT , deleteVideo)

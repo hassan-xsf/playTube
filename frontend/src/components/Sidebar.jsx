@@ -59,7 +59,7 @@ function SideBar() {
                 />
 
 
-                <div className="mt-5 mb-2 mx-4">
+                <div className="mt-5 mb-2 mx-4 hidden sm:block">
                   <span className="font-bold text-lg text-theme hidden sm:block">Subscriptions</span>
                 </div>
                 {

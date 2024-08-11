@@ -14,7 +14,7 @@ function VideoSkeleton() {
                                 className="h-full w-full rounded-3xl object-contain"
 
                             >
-                                <div className="animate-pulse h-96 dark:bg-white dark:bg-opacity-20 bg-black bg-opacity-20 rounded-3xl "></div>
+                                <div className="animate-pulse sm:h-[300px] lg:h-[500px] xl:h-[600px] dark:bg-white dark:bg-opacity-20 bg-black bg-opacity-20 rounded-3xl "></div>
                             </span>
                             <div className="flex flex-col flex-start my-3">
                                 <span className="animate-pulse font-[600] text-xl md:text-2xl text-theme text-center lg:text-start h-5 w-[50%] dark:bg-white dark:bg-opacity-10 bg-black bg-opacity-20 rounded-3xl"></span>

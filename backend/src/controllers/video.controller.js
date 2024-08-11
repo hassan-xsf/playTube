@@ -15,11 +15,11 @@ const incrementView = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Video not found!")
     }
     const updateVideo = await Video.findOneAndUpdate(
-        { _id: videoId},
-        {$inc: {views: 1}},
-        {new: true}
+        { _id: videoId },
+        { $inc: { views: 1 } },
+        { new: true }
     )
-    if(!updateVideo) throw new ApiError(400,"Problem retreiving the video Id!")
+    if (!updateVideo) throw new ApiError(400, "Problem retreiving the video Id!")
 
     return res.status(200).json(
         new ApiResponse(200, updateVideo, "Video views count has been incremented!")
@@ -108,6 +108,51 @@ const uploadVideo = asyncHandler(async (req, res) => {
         new ApiResponse(200, uploadedVideo, "Video succesfully uploaded!")
     )
 })
+
+const searchVideo = asyncHandler(async (req, res) => {
+    const { searchterm } = req.params;
+
+    const findVideos = await Video.aggregate([
+        {
+            $match: {
+                title: {
+                    $regex: searchterm,
+                    $options: 'i',
+                }
+            }
+        },
+        {
+            $lookup:
+            {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "videoOwner"
+            }
+        },
+        {
+            $unwind: '$videoOwner'
+        },
+        {
+            $project: {
+                videoOwner: 1,
+                thumbnail: 1,
+                description: 1,
+                title: 1,
+                createdAt: 1,
+                _id: 1,
+                duration: 1,
+                views: 1
+            }
+        }
+    ]
+    )
+
+    return res.status(200).json(
+        new ApiResponse(200, findVideos ? findVideos : {}, "Video search has been fetched!")
+    )
+})
+
 const deleteVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     if (!videoId) {
@@ -202,5 +247,6 @@ export {
     deleteVideo,
     getVideoById,
     getAllVideos,
-    incrementView
+    incrementView,
+    searchVideo
 }
