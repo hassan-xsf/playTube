@@ -20,11 +20,11 @@ function VideoBox({ data, showChannelName = true, className = "" }) {
                         <img className="w-full h-full object-contain" src={data.videoOwner.avatar} />
                     </Link>
                 }
-                <Link to = {`/video/${data._id}`} className="flex justify-center flex-col w-3/4">
-                    <span className={`font-semibold text-sm sm:text-base leading-tight pb-1.5 text-theme line-clamp-2`}>{data.title}</span>
+                <div className="flex justify-center flex-col w-3/4">
+                    <Link to = {`/video/${data._id}`}  className={`font-semibold text-sm sm:text-base leading-tight pb-1.5 text-theme line-clamp-2`}>{data.title}</Link>
                     {showChannelName && <Link to={`/c/${data.videoOwner.username}/videos`} className={`font-[600]  text-sm sm:text-md leading-tigh tracking-[-0.5px] text-black text-opacity-50 dark:text-white dark:text-opacity-50`}>{data.videoOwner.fullname}</Link>}
-                    <span className={`font-[600] text-sm sm:text-md leading-tigh tracking-[-0.5px] text-black text-opacity-50 dark:text-white dark:text-opacity-50`}>{data.views} views • {dateToFormat(data.createdAt)} </span>
-                </Link>
+                    <Link to = {`/video/${data._id}`} className={`font-[600] text-sm sm:text-md leading-tigh tracking-[-0.5px] text-black text-opacity-50 dark:text-white dark:text-opacity-50`}>{data.views} views • {dateToFormat(data.createdAt)} </Link>
+                </div>
             </div>
         </div>
     </>

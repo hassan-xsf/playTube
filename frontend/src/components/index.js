@@ -22,6 +22,7 @@ import ProtectedRoute from "./ProtectedRoute.jsx";
 import ShareVideoModal from "./ShareVideoModal.jsx";
 import VideoBoxSkeleton from "./Skeletons/VideoBoxSkeleton.jsx";
 import VideoSkeleton from "./Skeletons/VideoSkeleton.jsx";
+import About from "./About.jsx";
 
 export {
     ProtectedRoute,
@@ -49,4 +50,5 @@ export {
     VideoSkeleton,
     // Skeletons
     VideoBoxSkeleton,
+    About
 }

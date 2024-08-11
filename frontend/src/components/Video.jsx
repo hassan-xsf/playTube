@@ -7,6 +7,7 @@ import axios from "axios"
 import { Outlet } from 'react-router'
 import { VideoSkeleton } from './index'
 import { useForm } from 'react-hook-form'
+import { formatSeconds } from '../utils/formatSeconds'
 
 function Video() {
 
@@ -20,6 +21,7 @@ function Video() {
     const mode = useSelector(state => state.theme.mode)
     const [isSubbed, setisSubbed] = useState(false)
     const [totalSub, settotalSub] = useState(0)
+    const [recommendData,setRecommendData] = useState({})
 
     const [isLiked, setisLiked] = useState(false)
     const [totalLikes, setTotalLikes] = useState(0)
@@ -39,7 +41,7 @@ function Video() {
 
                 }
                 if (isLogged) {
-                    const test = await axios.patch(`/api/v1/users/updatehistory/${videoId}`) // user history add 
+                    await axios.patch(`/api/v1/users/updatehistory/${videoId}`) // user history add 
                     const subData = await axios.get(`/api/v1/sub/hassubbed/${videoId}`)
                     if (subData) {
                         setisSubbed(subData.data.data.subbed)
@@ -49,9 +51,12 @@ function Video() {
                         setisLiked(likeData.data.data.liked)
                     }
                 }
+
+                const res = await axios.get(`/api/v1/video/search/${videoInfo.data.data[0].title}`)
+                setRecommendData(res.data.data.filter(i => i._id !== videoId))
             }
             catch (error) {
-                console.log("Error while fetching video data:" +error.message)
+                console.log("Error while fetching video data:" + error.message)
                 navigate("/notfound")
             }
             finally {
@@ -109,11 +114,11 @@ function Video() {
                                 <div className="flex flex-col flex-start my-3">
                                     <span className="font-[600] text-xl md:text-2xl text-theme text-center lg:text-start">{VideoData.title}</span>
                                 </div>
-                                <div className="flex flex-col lg:flex-row justify-between items-center gap-5 xl:gap-12 pt-4">
+                                <div className="flex flex-col lg:flex-row justify-between items-center gap-5 xl:gap-12 pt-1">
                                     <Link to={`/c/${VideoData.videoOwner.username}`} className="flex items-center gap-3.5 pb-1 flex-col lg:flex-row">
-                                        <div className="rounded-full size-12 bg-white flex justify-center items-center overflow-hidden">
+                                        <div className="rounded-full size-12 bg-gray-100 overflow-hidden">
                                             <span>
-                                                <img className="hover:scale-105 hover:transition-all w-full h-full object-contain" src={VideoData.videoOwner.avatar} />
+                                                <img className="hover:scale-105 hover:transition-all w-full h-full object-fill" src={VideoData.videoOwner.avatar} />
                                             </span>
 
                                         </div>
@@ -174,14 +179,13 @@ function Video() {
                                 <Comment />
                             </div>
                             <div className="flex flex-col gap-6 w-[90%] xsm:w-3/4 sm:w-2/3 lg:w-1/3">
-                                <VideoSuggestion />
-                                <VideoSuggestion />
-                                <VideoSuggestion />
-                                <VideoSuggestion />
-                                <VideoSuggestion />
-                                <VideoSuggestion />
-                                <VideoSuggestion />
-                                <VideoSuggestion />
+                            {
+                                recommendData ? <div>No recommendations available ☹️</div>
+                                :
+                                recommendData.map((e) => (
+                                    <VideoSuggestion key = {e._id} data = {e}/>
+                                ))
+                            }
                             </div>
                         </section>
                     </div>
@@ -292,7 +296,7 @@ function Comment() {
                 ))
             ) : (
                 CommentData && CommentData.map((comment) => (
-                    <CommentBox key={comment._id} data={comment} deleteComment={deleteComment} commentLikeHandle = {commentlikeHandle} commentdisLikeHandle = {commentdislikeHandle} />
+                    <CommentBox key={comment._id} data={comment} deleteComment={deleteComment} commentLikeHandle={commentlikeHandle} commentdisLikeHandle={commentdislikeHandle} />
                 ))
             )}
         </div>
@@ -312,14 +316,14 @@ function CommentSkeleton() {
     </>
 }
 
-function CommentBox({ data, deleteComment , commentLikeHandle , commentdisLikeHandle }) {
+function CommentBox({ data, deleteComment, commentLikeHandle, commentdisLikeHandle }) {
     const authData = useSelector(state => state.auth.authData)
     const mode = useSelector(state => state.theme.mode)
     return <>
 
         <div className="flex items-start gap-4">
             <div className="rounded-full size-12 bg-white flex justify-center items-center overflow-hidden">
-                <img className="w-full h-full object-contain" src={data.commentOwner.avatar} />
+                <img className="w-full h-full object-fill" src={data.commentOwner.avatar} />
             </div>
             <div className="flex flex-col items-start w-[80%]">
                 <div className="flex justify-center items-end gap-4">
@@ -330,9 +334,9 @@ function CommentBox({ data, deleteComment , commentLikeHandle , commentdisLikeHa
                     {data.content}
                 </span>
                 <div className="flex gap-2 items-center">
-                    <svg onClick = {() => commentLikeHandle(data._id)} className={`cursor-pointer size-5 hover:dark:text-white hover:text-primary-black hover:scale-110 hover:-rotate-6  hover:transition-all ${mode == 'dark' ? "text-[#262626]" : 'text-[#F2F2F2]'}`} viewBox="0 0 24 24" fill="currentColor" stroke={mode == 'dark' ? "white" : 'black'} xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M15.9 4.5C15.9 3 14.418 2 13.26 2c-.806 0-.869.612-.993 1.82-.055.53-.121 1.174-.267 1.93-.386 2.002-1.72 4.56-2.996 5.325V17C9 19.25 9.75 20 13 20h3.773c2.176 0 2.703-1.433 2.899-1.964l.013-.036c.114-.306.358-.547.638-.82.31-.306.664-.653.927-1.18.311-.623.27-1.177.233-1.67-.023-.299-.044-.575.017-.83.064-.27.146-.475.225-.671.143-.356.275-.686.275-1.329 0-1.5-.748-2.498-2.315-2.498H15.5S15.9 6 15.9 4.5zM5.5 10A1.5 1.5 0 0 0 4 11.5v7a1.5 1.5 0 0 0 3 0v-7A1.5 1.5 0 0 0 5.5 10z" /></svg>
+                    <svg onClick={() => commentLikeHandle(data._id)} className={`cursor-pointer size-5 hover:dark:text-white hover:text-primary-black hover:scale-110 hover:-rotate-6  hover:transition-all ${mode == 'dark' ? "text-[#262626]" : 'text-[#F2F2F2]'}`} viewBox="0 0 24 24" fill="currentColor" stroke={mode == 'dark' ? "white" : 'black'} xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M15.9 4.5C15.9 3 14.418 2 13.26 2c-.806 0-.869.612-.993 1.82-.055.53-.121 1.174-.267 1.93-.386 2.002-1.72 4.56-2.996 5.325V17C9 19.25 9.75 20 13 20h3.773c2.176 0 2.703-1.433 2.899-1.964l.013-.036c.114-.306.358-.547.638-.82.31-.306.664-.653.927-1.18.311-.623.27-1.177.233-1.67-.023-.299-.044-.575.017-.83.064-.27.146-.475.225-.671.143-.356.275-.686.275-1.329 0-1.5-.748-2.498-2.315-2.498H15.5S15.9 6 15.9 4.5zM5.5 10A1.5 1.5 0 0 0 4 11.5v7a1.5 1.5 0 0 0 3 0v-7A1.5 1.5 0 0 0 5.5 10z" /></svg>
                     <span className="font-normal tracking-tight text-sm opacity-80 text-theme pr-2">{data.likes}</span>
-                    <svg onClick = {() => commentdisLikeHandle(data._id)} className={`cursor-pointer size-5 hover:dark:text-white hover:text-primary-black hover:scale-110 hover:-rotate-6 hover:transition-all ${mode == 'dark' ? "text-[#262626]" : 'text-[#F2F2F2]'}`} viewBox="0 0 24 24" fill="currentColor" stroke={mode == 'dark' ? "white" : 'black'} xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M8.1 20.5c0 1.5 1.482 2.5 2.64 2.5.806 0 .869-.613.993-1.82.055-.53.121-1.174.267-1.93.386-2.002 1.72-4.56 2.996-5.325V8C15 5.75 14.25 5 11 5H7.227C5.051 5 4.524 6.432 4.328 6.964A15.85 15.85 0 0 1 4.315 7c-.114.306-.358.546-.638.82-.31.306-.664.653-.927 1.18-.311.623-.27 1.177-.233 1.67.023.299.044.575-.017.83-.064.27-.146.475-.225.671-.143.356-.275.686-.275 1.329 0 1.5.748 2.498 2.315 2.498H8.5S8.1 19 8.1 20.5zM18.5 15a1.5 1.5 0 0 0 1.5-1.5v-7a1.5 1.5 0 0 0-3 0v7a1.5 1.5 0 0 0 1.5 1.5z" /></svg>
+                    <svg onClick={() => commentdisLikeHandle(data._id)} className={`cursor-pointer size-5 hover:dark:text-white hover:text-primary-black hover:scale-110 hover:-rotate-6 hover:transition-all ${mode == 'dark' ? "text-[#262626]" : 'text-[#F2F2F2]'}`} viewBox="0 0 24 24" fill="currentColor" stroke={mode == 'dark' ? "white" : 'black'} xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M8.1 20.5c0 1.5 1.482 2.5 2.64 2.5.806 0 .869-.613.993-1.82.055-.53.121-1.174.267-1.93.386-2.002 1.72-4.56 2.996-5.325V8C15 5.75 14.25 5 11 5H7.227C5.051 5 4.524 6.432 4.328 6.964A15.85 15.85 0 0 1 4.315 7c-.114.306-.358.546-.638.82-.31.306-.664.653-.927 1.18-.311.623-.27 1.177-.233 1.67.023.299.044.575-.017.83-.064.27-.146.475-.225.671-.143.356-.275.686-.275 1.329 0 1.5.748 2.498 2.315 2.498H8.5S8.1 19 8.1 20.5zM18.5 15a1.5 1.5 0 0 0 1.5-1.5v-7a1.5 1.5 0 0 0-3 0v7a1.5 1.5 0 0 0 1.5 1.5z" /></svg>
                 </div>
             </div>
             {authData._id === data.commentOwner._id && <button onClick={() => deleteComment(data._id)}><svg className="hover:stroke-red-500 size-2 w-1/2 cursor-pointer lg:size-4 my-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"></path></svg></button>}
@@ -341,22 +345,22 @@ function CommentBox({ data, deleteComment , commentLikeHandle , commentdisLikeHa
     </>
 }
 
-function VideoSuggestion() {
+function VideoSuggestion({data}) {
     return (<>
         <div className="rounded-md flex bg-theme">
             <div className="relative w-[70%]">
-                <img className="w-full h-full object-contain rounded-2xl" src="https://i.ytimg.com/vi/5h6Oe3yIJAA/hq720.jpg?sqp=-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLA9Fx81c-o8BCJl6B5JMpzRl7po-Q" />
-                <span className="bg-black bg-opacity-70 text-white font-semibold text-sm sm:text-md py-0.5 px-1 rounded-md tracking-wide absolute bottom-2 right-3">0:36</span>
+                <img className="w-full h-full object-contain rounded-2xl" src={data.thumbnail} />
+                <span className="bg-black bg-opacity-70 text-white font-semibold text-sm sm:text-md py-0.5 px-1 rounded-md tracking-wide absolute bottom-2 right-3">{formatSeconds(data.duration)}</span>
             </div>
             <div className="flex mt-2">
                 <div className="px-3 flex flex-col">
-                    <span className="font-semibold text-black text-xs xl:text-sm sm:text-base leading-tight dark:text-white">DSA with javascript got him appreciateion and a package</span>
+                    <span className="font-semibold text-black text-xs xl:text-sm sm:text-base leading-tight dark:text-white">{data.title}</span>
                     <div className="flex items-center gap-1 pt-2 pb-0.5">
                         <span className="font-[600] text-xs lg:text-sm xl:text-md text-black text-opacity-80 dark:text-white dark:text-opacity-50">
-                            Chai aur Code
+                            {data.videoOwner.fullname}
                         </span>
                     </div>
-                    <span className="font-[600]  text-sm sm:text-md text-black text-opacity-80 text-md leading-tight  dark:text-white dark:text-opacity-50">238 views • 20 hours ago </span>
+                    <span className="font-[600]  text-sm sm:text-md text-black text-opacity-80 text-md leading-tight  dark:text-white dark:text-opacity-50">{data.views} views • {dateToFormat(data.createdAt)} </span>
                 </div>
             </div>
         </div>

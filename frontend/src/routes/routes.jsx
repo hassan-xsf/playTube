@@ -18,7 +18,8 @@ import {
     Video,
     ErrorBoundary,
     ProtectedRoute,
-    ShareVideoModal
+    ShareVideoModal,
+    About
 } from '../components/index.js'
 
 
@@ -31,6 +32,10 @@ export const router = createBrowserRouter([
             {
                 path: "",
                 element: <HomeVideoPage />
+            },
+            {
+                path: '/about',
+                element: <About/>
             },
             {
                 path: '/search/:searchParams',
@@ -108,7 +113,7 @@ export const router = createBrowserRouter([
         path: '/video/:videoId',
         element: (
             <>
-                <ProtectedRoute required={false} permission = {true}>
+                <ProtectedRoute required={false} permission={true}>
                     <Navbar />
                     <Video />
                 </ProtectedRoute>

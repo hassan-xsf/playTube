@@ -49,6 +49,7 @@ function EditInfo() {
     }
     const editPassword = async (e) => {
         setError("")
+        if(authData.username === "test") return setError("You cannot change the password to test accounts!")
         if (success === "") {
             if (!e.pi_cpass && !e.pi_npass) {
                 setError("Please enter passwords in order to save!")
@@ -81,7 +82,8 @@ function EditInfo() {
     const editProfilePic = async (e) => {
         setError("")
         if (success === "") {
-            if (!e.avatar[0] || e.avatar[0]?.type !== "image/jpeg") {
+            console.log(e.avatar[0])
+            if (!e.avatar[0] || !e.avatar[0]?.type.includes('image/')) {
                 setError("Please upload a file first!")
             }
             else {
@@ -105,7 +107,7 @@ function EditInfo() {
     const editCoverPic = async (e) => {
         setError("")
         if (success === "") {
-            if (!e.coverImage[0] || e.coverImage[0]?.type !== "image/jpeg") {
+            if (!e.coverImage[0] || !e.coverImage[0]?.type.includes('image/')) {
                 setError("Please upload a file first!")
             }
             else {

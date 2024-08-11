@@ -116,7 +116,7 @@ const searchVideo = asyncHandler(async (req, res) => {
         {
             $match: {
                 title: {
-                    $regex: searchterm,
+                    $regex: searchterm.split(' ').join('|'),
                     $options: 'i',
                 }
             }

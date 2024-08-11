@@ -67,9 +67,9 @@ function Navbar() {
                   (
                     <>
                       <Link 
-                        to = {`/c/${authData.username}/videos`}
+                        to = {`/c/${authData.username}/edit`}
                         className={`rounded-full size-9 flex justify-center ring-1 items-center ring-opacity-20 overflow-hidden ${mode !== 'dark' ? "ring-primary-black" : "ring-white"}`}>
-                        <img className="w-full h-full object-contain bg-white" src={authData.avatar} />
+                        <img className="w-full h-full object-fill bg-white" src={authData.avatar} />
                       </Link>
                     </>
                   )
