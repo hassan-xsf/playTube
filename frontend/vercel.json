@@ -1,5 +1,5 @@
 {
     "rewrites": [
-      { "source": "/api/(.*)", "destination": "https://your-backend-url.com/api/$1" }
+      { "source": "/api/(.*)", "destination": "https://play-tube-backend.vercel.app/api/$1" }
     ]
   }
