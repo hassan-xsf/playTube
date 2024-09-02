@@ -8,8 +8,12 @@
 
 
 
-# PlayTube v1.1 🔴
-### Preview:
+# PlayTube v1.1 🔴 
+### Live Preview (Click below)
+
+[![Live Preview](https://img.shields.io/badge/Live%20Preview-PlayTubeX-red?style=for-the-badge)](https://play-tubex.vercel.app/)
+
+### Video Preview:
 https://github.com/user-attachments/assets/75c86ca0-7182-4fc7-81c9-8d969e033f4c
 
 #### Made using MERN stack.
