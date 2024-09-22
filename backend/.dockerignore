@@ -1,0 +1,22 @@
+# Ignore node_modules
+node_modules
+
+# Ignore logs
+logs
+*.log
+npm-debug.log*
+
+# Ignore build directories
+dist
+build
+
+# Ignore Docker files
+Dockerfile
+
+# Ignore IDE/editor config files
+.vscode
+.idea
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db

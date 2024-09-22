@@ -22,6 +22,14 @@ app.use(cookieParser())
 
 import userRouter from './routes/user.routes.js'
 
+app.use('/api/v1/healthcheck' , (req,res) => {
+    res.status(200).json(
+        {
+            status: "Okay"
+        }
+    )
+})
+
 app.use("/api/v1/users" , userRouter)
 
 import likeRouter from './routes/like.routes.js'
